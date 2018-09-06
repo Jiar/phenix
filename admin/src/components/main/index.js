@@ -2,30 +2,34 @@ import React, { PureComponent } from 'react';
 import Category from '@/components/main/side/category';
 import ArticleList from '@/components/main/side/article';
 import Offside from '@/components/main/offside';
+import { Message } from '@/components/lib';
+import ExitEditorDialog from '@/components/common/exitEditorDialog';
 
 import { connect } from 'react-redux';
-import { updateArticle } from '@/redux/action/article';
+import { setArticleDraft, setDetailArticle, setArticleList } from '@/redux/action/article';
+import fetch from '@/utils/fetch';
 
-class Article extends PureComponent {
+class Main extends PureComponent {
   constructor (props) {
     super(props);
     this.state = {
-      openDrawer: true,
-      articleDetail: props.articleDetail
+      openDrawer: true
     };
   }
   componentDidMount () {
+    let { articleDetail } = this.props;
+    if (articleDetail && articleDetail.id) {
+      this.props.saveDraft(articleDetail);
+    }
     // window.onbeforeunload = () => {
     //   // 提示用户是继续浏览页面还是离开当前页面。
     //   return '你可能有数据没有保存';
-    // }
+    // };
     document.body.addEventListener('keydown', this.toSaveArticle, false);
   }
   componentWillReceiveProps (nextProps) {
     if (this.props.articleDetail !== nextProps.articleDetail) {
-      this.setState({
-        articleDetail: nextProps.articleDetail
-      });
+      this.props.saveDraft(nextProps.articleDetail);
     }
   }
   toSaveArticle = (e) => {
@@ -43,31 +47,57 @@ class Article extends PureComponent {
     });
   }
   changeInput = e => {
-    this.setState({
-      articleDetail: {
-        ...this.state.articleDetail,
-        title: e.target.value
-      }
-    });
+    let article = { ...this.props.articleDraft };
+    article.title = e.target.value;
+    this.props.saveDraft(article);
   }
   changeArticleContent = value => {
-    this.setState({
-      articleDetail: {
-        ...this.state.articleDetail,
-        content: value
-      }
-    });
+    let article = { ...this.props.articleDraft };
+    article.content = value;
+    this.props.saveDraft(article);
   }
   saveArticle = () => {
-    let { articleDetail } = this.state;
-    this.props.updateArticle(articleDetail);
+    let { articleDraft } = this.props;
+    this.updateArticle(articleDraft).then(() => {
+      Message.success('保存文章成功');
+    });
   }
   toggleArticlePublish = () => {
-    let { articleDetail } = this.state;
-    this.props.updateArticle({...articleDetail, publish: articleDetail.publish ? 0 : 1});
+    let articleDraft = { ...this.props.articleDraft },
+      data = {
+        id: articleDraft.id,
+        publish: articleDraft.publish ? 0 : 1
+      };
+    this.updateArticle(data).then(() => {
+      Message.success(data.publish ? '已将文章公开' : '已将文章转为私密');
+      this.props.saveDraft({ ...articleDraft, ...data });
+    });
+  }
+  updateArticle = (article) => {
+    return new Promise((resolve, reject) => {
+      fetch.post('/api/article/update', article)
+        .then((res) => {
+          if (res.success) {
+            let list = [...this.props.articleList],
+              articleDetail = { ...this.props.articleDraft, ...article };
+            for (let i = 0; i < list.length; i++) {
+              if (list[i].id === articleDetail.id) {
+                list[i] = articleDetail;
+              }
+            }
+            this.props.setArticleList(list);
+            this.props.setDetailArticle(articleDetail);
+            resolve();
+          } else {
+            reject(res.message);
+          }
+        }).catch((err) => {
+          reject(err);
+        });
+    });
   }
   render () {
-    let { isEnd } = this.props, { openDrawer, articleDetail } = this.state;
+    let { isEnd, articleDraft, exitDialog } = this.props, { openDrawer } = this.state;
     return (
       <div className="container">
         <div className={`side-container${openDrawer ? '' : ' close'}`}>
@@ -78,10 +108,10 @@ class Article extends PureComponent {
         </div>
 
         {
-          articleDetail && articleDetail.id ? (
+          articleDraft && articleDraft.id ? (
             <Offside
               openDrawer={openDrawer}
-              articleDetail={articleDetail}
+              articleDetail={articleDraft}
               handles={{
                 saveArticle: this.saveArticle,
                 changeInput: this.changeInput,
@@ -93,12 +123,14 @@ class Article extends PureComponent {
           ) : null
         }
         {
-          isEnd && !articleDetail.id ? (
+          isEnd && !articleDraft.id ? (
             <div className="main-container">
               <div className="empty-article"></div>
             </div>
           ) : null
         }
+
+        <ExitEditorDialog visible={exitDialog.open} />
       </div>
     );
   }
@@ -107,11 +139,20 @@ class Article extends PureComponent {
 export default connect(
   state => ({
     isEnd: state.article.list.isEnd,
-    articleDetail: state.article.detail
+    articleDraft: state.article.draft,
+    articleDetail: state.article.detail,
+    articleList: state.article.list.data,
+    exitDialog: state.appSetting.exitDialog
   }),
   dispatch => ({
-    updateArticle: article => {
-      dispatch(updateArticle(article));
+    saveDraft: article => {
+      dispatch(setArticleDraft(article));
+    },
+    setDetailArticle: article => {
+      dispatch(setDetailArticle(article));
+    },
+    setArticleList: list => {
+      dispatch(setArticleList(list));
     }
   })
-)(Article);
+)(Main);
