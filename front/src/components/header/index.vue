@@ -3,7 +3,7 @@
       <div class="menu-list">
         <router-link class="menu-item" active-class="active" exact to="/">首页</router-link>
         <router-link class="menu-item" active-class="active" to="/category">分类</router-link>
-        <a class="menu-item" href="https://github.com/JaneyChan">Github</a>
+        <a class="menu-item" href="https://github.com/Jiar">Github</a>
       </div>
     </div>
 </template>
