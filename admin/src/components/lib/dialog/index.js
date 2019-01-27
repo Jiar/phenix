@@ -1,43 +1,10 @@
-import Dialog from './Dialog';
-import confirm from './confirm';
+import Modal from './Modal';
+import { confirm, info, success, warning, error } from './confirm';
 
-Dialog.confirm = (props) => {
-  const config = {
-    ...props
-  };
-  return confirm(config);
-};
+Modal.confirm = confirm;
+Modal.info = info;
+Modal.success = success;
+Modal.warning = warning;
+Modal.error = error;
 
-Dialog.info = (props) => {
-  const config = {
-    iconType: 'info-circle',
-    ...props
-  };
-  return confirm(config);
-};
-
-Dialog.success = (props) => {
-  const config = {
-    iconType: 'check-circle',
-    ...props
-  };
-  return confirm(config);
-};
-
-Dialog.warning = (props) => {
-  const config = {
-    iconType: 'exclamation-circle',
-    ...props
-  };
-  return confirm(config);
-};
-
-Dialog.error = (props) => {
-  const config = {
-    iconType: 'cross-circle',
-    ...props
-  };
-  return confirm(config);
-};
-
-export default Dialog;
+export default Modal;

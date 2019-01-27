@@ -61,6 +61,20 @@ class ArticleModal {
     }
     return result;
   }
+
+  /**
+   * 获取回收站中的文章列表
+   */
+  static async getRecycleArticles() {
+    let _sql = "SELECT * FROM ?? WHERE status = ?"
+    let result = await dbUtils.query(_sql, ['article', 0])
+    if ( Array.isArray(result) && result.length > 0 ) {
+      result = result
+    } else {
+      result = []
+    }
+    return result;
+  }
   
   /**
    * 创建文章
@@ -89,6 +103,20 @@ class ArticleModal {
    */
   static async getArticleById( id ) {
     let result = await dbUtils.findDataById('article', id);
+    if ( Array.isArray(result) && result.length > 0 ) {
+      result = result[0]
+    } else {
+      result = {}
+    }
+    return result;
+  }
+  /**
+   * 根据文章路由获取文章内容
+   * @param {Number} routeName       文章路由
+   */
+  static async getArticleByRouteName( routeName ) {
+    let _sql = "SELECT * FROM ?? WHERE routeName = ?"
+    let result = await dbUtils.query(_sql, ['article', routeName])
     if ( Array.isArray(result) && result.length > 0 ) {
       result = result[0]
     } else {

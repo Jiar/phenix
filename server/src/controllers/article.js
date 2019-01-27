@@ -75,7 +75,18 @@ class ArticleController {
     }
     ctx.body = result;
   }
-
+  /**
+   * 获取回收站中的文章列表
+   * @param {*} ctx 
+   */
+  static async getRecycleArticles(ctx) {
+    let result = handle.response(false, '获取列表失败', null, 201);
+    let articleResult = await articleModel.getRecycleArticles();
+    if (articleResult) {
+      result = handle.response(true, '', articleResult, 200);
+    }
+    ctx.body = result;
+  }
   /**
    * 创建文章
    * @param {*} ctx
@@ -119,11 +130,21 @@ class ArticleController {
     ctx.body = result;
   }
   static async getArticleById(ctx) {
-    let result = handle.response(false, '更新失败', null, 201);
+    let result = handle.response(false, '获取文章失败', null, 201);
     let articleId = ctx.params.id;
     let articleResult = await articleModel.getArticleById(articleId);
     if (articleResult) {
       result = handle.response(true, '', articleResult, 200);
+    }
+    ctx.body = result;
+  }
+  static async getArticleByRouteName(ctx) {
+    let result = handle.response(false, '获取文章失败', null, 201);
+    let routeName = ctx.params.routeName;
+    let articleResult = await articleModel.getArticleByRouteName(routeName);
+    console.log('articleResult ' + JSON.stringify(articleResult))
+    if (articleResult) {
+      result = handle.response(true, '路由', articleResult, 200);
     }
     ctx.body = result;
   }
@@ -141,7 +162,7 @@ class ArticleController {
       return handle.response(false, '未找到该文章', null, 201);
     }
 
-    let articleResult = await articleModel.updateArticle({ status: 0 }, formData.id);
+    let articleResult = await articleModel.updateArticle({ status: 0, publish: 0 }, formData.id);
     if (articleResult) {
       result = handle.response(true, '', {}, 200);
     }

@@ -1,32 +1,16 @@
-.dialog-wrap {
+.dialog-wrapper {
   position: fixed;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 1000;
   top: 0;
+  left: 0;
   right: 0;
   bottom: 0;
-  left: 0;
-  z-index: @zindex-modal;
-  .dialog-mask {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.5;
-    background: #000;
-  }
-  .dialog-container {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    background: #fff;
-    border-radius: @border-radius-base;
-    box-shadow: 0 4px 12px rgba(0,0,0,.15);
-    box-sizing: border-box;
-    margin-bottom: 50px;
-    min-width: 300px;
-  }
+  display: flex;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
   .dialog__header {
     padding: 20px 20px 0;
     min-height: 40px;
@@ -99,20 +83,81 @@
     }
   }
 }
-
-.flipInX-enter-done {
-  display: block !important;
+.dialog-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  transition: all 500ms;
 }
-.flipInX-enter-active {
-  display: block !important;
-  -webkit-animation: flipInX 500ms infinite;
-  animation: flipInX 500ms infinite;
+.dialog-content {
+  transition: all 0.3s;
+  background-color: white;
+  border-radius: 3px;
+  z-index: 2000;
+  position: relative;
+  box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
+  overflow: scroll;
+  min-width: 300px;
 }
-.flipInX-exit-active {
-  display: block !important;
-  -webkit-animation: flipOutX 500ms infinite;
-  animation: flipOutX 500ms infinite;
+.dialog-in {
+  animation: DialogEnter 500ms ease-out;
+  animation-iteration-count: 1;
 }
-.flipInX-exit-done {
-  display: none !important;
+.dialog-out {
+  animation: DialogOut 800ms linear;
+  animation-iteration-count: 1;
+  opacity: 0;
+}
+@keyframes DialogEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes DialogOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+.dialog-pop-enter, .dialog-pop-exit {
+  .dialog-content {
+    animation-fill-mode: both;
+    animation-play-state: paused;
+  }
+}
+.dialog-pop-enter {
+  .dialog-content {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+.dialog-pop-enter-active {
+  .dialog-content {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.dialog-pop-exit {
+  .dialog-content {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.dialog-pop-exit-active {
+  .dialog-content {
+    opacity: 0;
+    transform: scale(0.2);
+  }
 }
