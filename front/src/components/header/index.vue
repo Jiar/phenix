@@ -1,8 +1,9 @@
 <template>
     <div class="header-wrapper">
       <div class="menu-list">
-        <router-link class="menu-item" active-class="active" exact to="/">首页</router-link>
-        <router-link class="menu-item" active-class="active" to="/category">分类</router-link>
+        <router-link class="menu-item" active-class="active" exact to="/">Home</router-link>
+        <router-link class="menu-item" active-class="active" to="/category">Category</router-link>
+        <a class="menu-item" href="https://jiar.github.io">github.io</a>
         <a class="menu-item" href="https://github.com/Jiar">Github</a>
         <a class="menu-item" href="https://twitter.com/JiarYoo">Twitter</a>
         <a class="menu-item" href="https://weibo.com/u/2268197591">Weibo</a>

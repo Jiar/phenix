@@ -12,7 +12,7 @@
             <v-markdown :value="article.content" />
         </div>
         <ul class="article-copyright">
-          <li>本文作者：JaneChan</li>
+          <li>本文作者：Jiar</li>
           <li>本文链接：
             <a :href="this.location" target="_black">{{ this.location }}</a>
           </li>
